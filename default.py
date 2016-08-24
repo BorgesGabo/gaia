@@ -7,9 +7,18 @@
 # - user is required for authentication and authorization
 # - download is for downloading files uploaded in the db (does streaming)
 # -------------------------------------------------------------------------
-
 def form1():
    form = SQLFORM(db.customer)
+   if form.process().accepted:
+       response.flash = 'form accepted'
+   elif form.errors:
+       response.flash = 'form has errors'
+   else:
+       response.flash = 'please fill out the form'
+   return dict(form=form)
+
+def form2():
+   form = SQLFORM(db.po)
    if form.process().accepted:
        response.flash = 'form accepted'
    elif form.errors:
@@ -68,5 +77,3 @@ def call():
     supports xml, json, xmlrpc, jsonrpc, amfrpc, rss, csv
     """
     return service()
-
-
