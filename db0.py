@@ -12,7 +12,7 @@ db.define_table(
     Field('document'),
     Field('full_name'),
     Field('user_mail'),
-    Field('phone'),
+    Field('phone')
     primarykey=['id'])
 
 db.define_table(
