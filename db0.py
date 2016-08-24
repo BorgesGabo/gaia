@@ -29,7 +29,7 @@ db.define_table(
     Field('sku'),
     Field('categoria'),
     Field('status'),
-    format='%(product_name)s')
+    format='%(product_name)s %(presentation)s')
 
 db.define_table(
     'po_detail',
@@ -37,7 +37,7 @@ db.define_table(
     Field('product_name', db.product),
     Field('po_product_name'),
     Field('quantity'),
-    Field('po_sku'),
+    #Field('po_sku', 'reference product',requires=IS_IN_DB(db, db.product, '%(sku)s')),
     )
 
 
@@ -80,7 +80,6 @@ db.product.status.requires =[ IS_IN_SET(['disponible','descontinuado','agotado']
 # po's_detail's table constrains
 #--------------------------------
 
-db.po_detail.po_number.requires= IS_IN_DB(db,db.po.po_number)
 db.po_detail.quantity.requires=[IS_NOT_EMPTY(error_message='add a quantity'),IS_MATCH('^[0-9]*$', error_message='Introduce a valid quantity a number')]
 #db.po_detail.po_sku.requires=IS_IN_DB(db,db.product.sku)
 
