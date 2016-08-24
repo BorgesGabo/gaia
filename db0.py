@@ -20,7 +20,7 @@ db.define_table(
 #------------------------------
 
 #using a regex expression validates the just numbers
-db.customer.document.requires = [IS_NOT_IN_DB(db, db.customer.document),IS_MATCH('^[0-9]*$', error_message='Introduce a valid document just numbers')]
+db.customer.doc.requires = [IS_NOT_IN_DB(db, db.customer.document),IS_MATCH('^[0-9]*$', error_message='Introduce a valid document just numbers')]
 
 #using a regex expression validates words only
 db.customer.full_name.requires = [IS_NOT_EMPTY(),IS_MATCH('^\w+( \w+)*$', error_message='Introduce a valid name just alphabets')]
