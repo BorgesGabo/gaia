@@ -8,7 +8,7 @@ db = DAL('sqlite://storage.sqlite')
 
 db.define_table(
     'customer',
-    Field('document'),
+    Field('doc'),
     Field('full_name'),
     Field('user_mail'),
     Field('phone')
