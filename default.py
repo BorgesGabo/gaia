@@ -27,6 +27,15 @@ def form2():
        response.flash = 'please fill out the form'
    return dict(form=form)
 
+def form4():
+   form = SQLFORM(db.po_detail)
+   if form.process().accepted:
+       response.flash = 'form accepted'
+   elif form.errors:
+       response.flash = 'form has errors'
+   else:
+       response.flash = 'please fill out the form'
+   return dict(form=form)
 
 def form5():
    form = SQLFORM(db.product)
