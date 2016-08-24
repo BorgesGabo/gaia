@@ -75,3 +75,13 @@ db.product.unit.requires =[ IS_IN_SET(['g','un', 'ml'], error_message='must be g
 db.product.sku.requires = [IS_NOT_IN_DB(db, db.product.sku),IS_MATCH('^[0-9]*$', error_message='Introduce a valid document just numbers')]
 db.product.categoria.requires =[ IS_IN_SET(['aceites y aderezos','bebidas','condimentos y especias', 'frutas', 'frutos secos', 'harinas hojuelas y pastas', 'hortalizas', 'huevos','nueces y semillas','pa picar y endulzar','panaderia','proteina de  origen vegetal'], error_message='must be one of the existing categories')]
 db.product.status.requires =[ IS_IN_SET(['disponible','descontinuado','agotado'], error_message='must be disponible, descontinuado o agotado')]
+
+#--------------------------------
+# po's_detail's table constrains
+#--------------------------------
+
+db.po_detail.po_number.requires= IS_IN_DB(db,db.po.po_number)
+db.po_detail.quantity.requires=[IS_NOT_EMPTY(error_message='add a quantity'),IS_MATCH('^[0-9]*$', error_message='Introduce a valid quantity a number')]
+#db.po_detail.po_sku.requires=IS_IN_DB(db,db.product.sku)
+
+
