@@ -8,7 +8,8 @@
 # - download is for downloading files uploaded in the db (does streaming)
 # -------------------------------------------------------------------------
 def form1():
-   form = SQLFORM(db.customer)
+   form = SQLFORM(db.customer,buttons = [TAG.button('save',_type="submit"),TAG.button('next',_type="button",_onClick = "parent.location='%s' " % URL(form2))])
+
    if form.process().accepted:
        response.flash = 'form accepted'
    elif form.errors:
@@ -18,7 +19,7 @@ def form1():
    return dict(form=form)
 
 def form2():
-   form = SQLFORM(db.po)
+   form = SQLFORM(db.po,buttons = [TAG.button('save',_type="submit"),TAG.button('next',_type="button",_onClick = "parent.location='%s' " % URL(form4))])
    if form.process().accepted:
        response.flash = 'form accepted'
    elif form.errors:
@@ -37,6 +38,7 @@ def form4():
        response.flash = 'please fill out the form'
    return dict(form=form)
 
+  
 def form5():
    form = SQLFORM(db.product)
    if form.process().accepted:
@@ -105,3 +107,4 @@ def call():
     supports xml, json, xmlrpc, jsonrpc, amfrpc, rss, csv
     """
     return service()
+
