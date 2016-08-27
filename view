@@ -1,1 +1,11 @@
 
+def form7():
+    grid = SQLFORM.grid(db.po_detail, user_signature=False)
+    return locals()
+
+def resumen():
+    images = db().select(db.po_detail.ALL, orderby=db.po_detail.product_name)
+    return dict(images=images)
+def sketch():
+    pdc = db().select(db.product.ALL, orderby=db.product.product_name)
+    return dict(pdc=pdc[0]['product.woo_ref'])
