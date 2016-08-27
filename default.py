@@ -7,9 +7,18 @@
 # - user is required for authentication and authorization
 # - download is for downloading files uploaded in the db (does streaming)
 # -------------------------------------------------------------------------
+
+
 def form7():
-    grid = SQLFORM.grid(db.product)
+    grid = SQLFORM.grid(db.po_detail, user_signature=False)
     return locals()
+
+def resumen():
+    images = db().select(db.po_detail.ALL, orderby=db.po_detail.product_name)
+    return dict(images=images)
+def sketch():
+    pdc = db().select(db.product.ALL, orderby=db.product.product_name)
+    return dict(pdc=pdc)
 
 def form1():
    form = SQLFORM(db.customer,buttons = [TAG.button('save',_type="submit"),TAG.button('next',_type="button",_onClick = "parent.location='%s' " % URL(form2))])
@@ -68,9 +77,8 @@ def index():
     example action using the internationalization operator T and flash
     rendered by views/default/index.html or views/generic.html
 
-    if you need a simple wiki simply replace the two lines below with:
+    if you need a simple wiki simply replace the two lines below with:"""
     return auth.wiki()
-    """
     response.flash = T("Hello World")
     return dict(message=T('Welcome to web2py!'))
 
