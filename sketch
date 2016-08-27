@@ -1,1 +1,11 @@
 
+{{extend 'layout.html'}}
+<h1>This is the default/sketch.html template</h1>
+{{=BEAUTIFY(response._vars)}}
+
+<h1>Current data</h1>
+<ul>
+{{for pdc in pdcs:}}
+{{=LI(pdc.product_name)}}
+{{pass}}
+</ul>
