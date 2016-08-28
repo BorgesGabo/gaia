@@ -14,7 +14,7 @@ db.define_table(
 
 db.define_table(
     'po',
-    Field('po_number'),
+    Field('po_number', type='integer'),
     Field('date', type='datetime'),
     Field('customer', db.customer),
     format='%(po_number)s')
@@ -33,10 +33,10 @@ db.define_table(
 
 db.define_table(
     'po_detail',
-    Field('po_number', db.po),
+    Field('po_number',db.po),
     Field('product_name', db.product),
     Field('po_product_name'),
-    Field('quantity'),
+    Field('quantity', default='1'),
     #Field('po_sku', 'reference product',requires=IS_IN_DB(db, db.product, '%(sku)s')),
     )
 
@@ -83,4 +83,7 @@ db.product.status.requires =[ IS_IN_SET(['disponible','descontinuado','agotado']
 db.po_detail.quantity.requires=[IS_NOT_EMPTY(error_message='add a quantity'),IS_MATCH('^[0-9]*$', error_message='Introduce a valid quantity a number')]
 #db.po_detail.po_sku.requires=IS_IN_DB(db,db.product.sku)
 
-
+#--------------------------------------------
+#do not show the id field in the forms
+#--------------------------------------------
+db.po_detail.po_product_name.readable= db.po_detail.po_product_name.writable=False
