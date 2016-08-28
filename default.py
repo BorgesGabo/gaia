@@ -7,9 +7,20 @@
 # - user is required for authentication and authorization
 # - download is for downloading files uploaded in the db (does streaming)
 # -------------------------------------------------------------------------
+
+
 def form7():
-    grid = SQLFORM.grid(db.product)
+    grid = SQLFORM.grid(db.po_detail, user_signature=False)
     return locals()
+
+def resumen():
+    images = db().select(db.po_detail.ALL, orderby=db.po_detail.product_name)
+    return dict(images=images)
+
+def sketch():
+    pdcs = db().select(db.product.ALL, orderby=db.product.product_name)
+    a=type(pdcs)
+    return  dict(pdcs=pdcs)
 
 def form1():
    form = SQLFORM(db.customer,buttons = [TAG.button('save',_type="submit"),TAG.button('next',_type="button",_onClick = "parent.location='%s' " % URL(form2))])
@@ -23,7 +34,7 @@ def form1():
    return dict(form=form)
 
 def form2():
-   form = SQLFORM(db.po,buttons = [TAG.button('save',_type="submit"),TAG.button('next',_type="button",_onClick = "parent.location='%s' " % URL(form4))])
+   form = SQLFORM(db.po,buttons = [TAG.button('save',_type="submit"),TAG.button('next',_type="button",_onClick = "parent.location='%s' " % URL(form3))])
    if form.process().accepted:
        response.flash = 'form accepted'
    elif form.errors:
@@ -32,7 +43,7 @@ def form2():
        response.flash = 'please fill out the form'
    return dict(form=form)
 
-def form4():
+def form3():
    form = SQLFORM(db.po_detail)
    if form.process().accepted:
        response.flash = 'form accepted'
@@ -43,7 +54,7 @@ def form4():
    return dict(form=form)
 
   
-def form5():
+def form4():
    form = SQLFORM(db.product)
    if form.process().accepted:
        response.flash = 'form accepted'
@@ -53,24 +64,14 @@ def form5():
        response.flash = 'please fill out the form'
    return dict(form=form)
 
-def form6():
-   form = SQLFORM(db.po_detail)
-   if form.process().accepted:
-       response.flash = 'form accepted'
-   elif form.errors:
-       response.flash = 'form has errors'
-   else:
-       response.flash = 'please fill out the form'
-   return dict(form=form)
 
 def index():
     """
     example action using the internationalization operator T and flash
     rendered by views/default/index.html or views/generic.html
 
-    if you need a simple wiki simply replace the two lines below with:
+    if you need a simple wiki simply replace the two lines below with:"""
     return auth.wiki()
-    """
     response.flash = T("Hello World")
     return dict(message=T('Welcome to web2py!'))
 
