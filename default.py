@@ -8,18 +8,36 @@
 # - download is for downloading files uploaded in the db (does streaming)
 # -------------------------------------------------------------------------
 
+def show1():
+    #this function uploads and handles the form also uploads a query which select in reverse order all data in po_detail table
+    ordenes=db(db.po_detail.id>0).select(orderby=~db.po_detail.po_number)
+    form=SQLFORM(db.po_detail, buttons = [TAG.button('save',_type="submit"),TAG.button('update',_type="button",_onClick = "parent.location='%s' " % URL(show1))])
+    if form.process().accepted:
+       response.flash = 'form accepted'
+    elif form.errors:
+       response.flash = 'form has errors'
+    else:
+       response.flash = 'please fill out the form'
+    return dict(ordenes=ordenes, form=form)
 
 def form7():
     grid = SQLFORM.grid(db.po_detail, user_signature=False)
     return locals()
 
-def resumen():
-    images = db().select(db.po_detail.ALL, orderby=db.po_detail.product_name)
-    return dict(images=images)
+def show():
+    #product = db.product(request.args(0, cast=int)) or redirect(URL('index'))
+    #db.post.image_id.default = image.id
+    grid = SQLFORM.grid(db.po_detail, user_signature=False)
+    #if form.process().accepted:
+     #   response.flash = 'your data is safe'
+    #details = db(db.po_details. == po.id).select()
+    return dict(grid=grid)
 
+
+#This returns all the products ordered by product name
 def sketch():
     pdcs = db().select(db.product.ALL, orderby=db.product.product_name)
-    return  dict(pdcs=pdcs)
+    return  dict(pdcs=pdcs )
 
 def form1():
    form = SQLFORM(db.customer,buttons = [TAG.button('save',_type="submit"),TAG.button('next',_type="button",_onClick = "parent.location='%s' " % URL(form2))])
