@@ -7,7 +7,9 @@
 # - user is required for authentication and authorization
 # - download is for downloading files uploaded in the db (does streaming)
 # -------------------------------------------------------------------------
-
+def results():
+    query=db((db.po.po_number>2423)&(db.po.po_number<2430)).select(db.po.id,db.po.po_number,db.po.date,db.po_detail.id,db.po_detail.po_number,db.po_detail.product_name)
+    return dict(query=query)
 def show1():
     #this function uploads and handles the form also uploads a query which select in reverse order all data in po_detail table
     ordenes=db(db.po_detail.id>0).select(orderby=~db.po_detail.po_number)
