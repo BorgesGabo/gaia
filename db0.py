@@ -29,7 +29,7 @@ db.define_table(
     Field('sku'),
     Field('category'),
     Field('status'),
-    format='%(product_name)s %(presentation)s')
+    format='%(name)s %(presentation)s')
 
 db.define_table(
     'po_detail',
@@ -89,9 +89,9 @@ db.po_detail.quantity.requires=[IS_NOT_EMPTY(error_message='add a quantity'),IS_
 db.po_detail.po_id.requires=IS_IN_DB(db,db.po.id,'%(po_number)s')
 # validates the product id is referenced via format showing in the po_detail' field: product_id
 # this validation assures that once the "product_name" is chosen in po_detail's table its "product_id" in product's table is referenced
-db.po_detail.product_id.requires=IS_IN_DB(db,db.product.id,'%(product_name)s')
+db.po_detail.product_id.requires=IS_IN_DB(db,db.product.id,'%(name)s')
 
 #--------------------------------------------
 #do not show the id field in the forms
 #--------------------------------------------
-db.po_detail.po_id.readable= db.po_detail.po_id.writable=False
+db.po_detail.po_id.readable= db.po_detail.po_id.writable=True
