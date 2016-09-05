@@ -8,15 +8,15 @@
 # - download is for downloading files uploaded in the db (does streaming)
 # -------------------------------------------------------------------------
 
-# -*- coding: utf-8 -*-
-# this file is released under public domain and you can use without limitations
 
-# -------------------------------------------------------------------------
-# This is a sample controller
-# - index is the default action of any application
-# - user is required for authentication and authorization
-# - download is for downloading files uploaded in the db (does streaming)
-# -------------------------------------------------------------------------
+def results2():
+    #this query selects the columns from db.po_detail and db.po that are related
+    query=db((db.po.id==db.po_detail.po_id)).select(db.po.id,db.po.po_number,db.po.date,db.po_detail.id,db.po_detail.po_id,db.po_detail.product_id)
+    return dict(query=query)
+
+def results():
+    query=db((db.po.po_number>2423)&(db.po.po_number<=2428)).select(db.po.id,db.po.po_number,db.po.date,db.po_detail.id,db.po_detail.po_id,db.po_detail.product_id)
+    return dict(query=query)
 
 def order():
     #This query selects all the po's from db.po ordered by reverse order
@@ -187,5 +187,3 @@ def call():
     supports xml, json, xmlrpc, jsonrpc, amfrpc, rss, csv
     """
     return service()
-
-
