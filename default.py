@@ -7,7 +7,24 @@
 # - user is required for authentication and authorization
 # - download is for downloading files uploaded in the db (does streaming)
 # -------------------------------------------------------------------------
+def fechas():
+    return dict()
 
+def results3():
+    from datetime import datetime
+    #this query selects the columns from db.po_detail, db.po, and db.product that are related
+    form = SQLFORM.factory(
+        Field('fecha_desde', type='datetime', requires=IS_NOT_EMPTY(), default=lambda:datetime.now()),
+        Field('fecha_hasta', type='datetime', requires=IS_NOT_EMPTY()), default=lambda:datetime.now())
+    if form.process().accepted:
+        response.flash = 'form accepted'
+        session.fecha_desde = form.vars.fecha_desde
+        session.fecha_hasta = form.vars.fecha_hasta
+        redirect(URL('fechas'))
+    elif form.errors:
+        response.flash = 'form has errors'
+    query=db((db.po.id==db.po_detail.po_id)&(db.po_detail.po_id==db.product.id)).select(db.po.po_number,db.po.date, db.po_detail.product_id, db.po_detail.quantity, db.product.pres, db.po.customer_id)
+    return dict(query=query, form=form,)
 
 def results2():
     #this query selects the columns from db.po_detail and db.po that are related
