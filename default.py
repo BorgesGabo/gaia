@@ -7,12 +7,77 @@
 # - user is required for authentication and authorization
 # - download is for downloading files uploaded in the db (does streaming)
 # -------------------------------------------------------------------------
+
+import datetime
+
+
+def start():
+    # this function creates a form with date types and query the db between the 2 dates
+    # this function is extract from http://brunorocha.org/python/web2py/search-form-with-web2py.html
+    # default values to keep the form when submitted
+    # if you do not want defaults set all below to None
+    
+    # to undo at previous working version erase
+    
+    date_initial_default = \
+        datetime.datetime.strptime(request.vars.date_initial, "%Y-%m-%d") \
+            if request.vars.date_inicial else None
+    date_final_default = \
+        datetime.datetime.strptime(request.vars.date_final, "%Y-%m-%d") \
+            if request.vars.date_final else None
+    
+
+
+    # The search form created with .factory
+    form = SQLFORM.factory(
+                  
+                  Field("date_initial", "date", default=date_initial_default),
+                  Field("date_final", "date", default=date_final_default),
+                  formstyle='divs',
+                  submit_button="Search",
+                  )
+
+    # The base query to fetch all orders of db.po, db.po_details, db.product
+    query = db.po.id==db.po_detail.po_id
+    query &= db.po_detail.po_id==db.product.id
+    
+
+    # testing if the form was accepted              
+    if form.process().accepted:
+        # gathering form submitted values
+        
+        date_initial = form.vars.date_initial
+        date_final = form.vars.date_final
+        
+
+        # more dynamic conditions in to query
+        
+        if date_initial:
+            query &= db.po.date >= date_initial
+        if date_final:
+            query &= db.po.date <= date_final
+                    
+
+    count = db(query).count()
+    results = db(query).select(db.po.po_number,db.po.date,db.po_detail.product_id,db.po_detail.quantity,db.product.pres, db.po.customer_id, orderby='po_number')
+    msg = T("%s registers" % count )
+    return dict(form=form, msg=msg, results=results) 
+
+def results4():
+    import datetime
+    # this function is intented to provide a query from db.po. db.po_details and db.products filtered by dates
+    #from : http://aprenda-web2py.blogspot.com.co
+    query=db((db.po.date.year()==2016)&(db.po.date.month()==1)&(db.po.date.day()>1)).select(orderby='date')
+    return dict(query=query)
+
 def fechas():
-    return dict()
+    import datetime
+    year=db((db.po.date.year()==datetime.date(session.fecha_hasta).year)&(db.po.date.month()==4)&(db.po.date.day()>1)).select(orderby='date')
+    return dict(year=year)
 
 def results3():
     from datetime import datetime
-    #this query selects the columns from db.po_detail, db.po, and db.product that are related
+    #this query selects the columns from db.po_detail, db.po, and db.product that are related, creates a form based on dates types and once its submitted the user is redirected to fechas function
     form = SQLFORM.factory(
         Field('fecha_desde', type='datetime', requires=IS_NOT_EMPTY(), default=lambda:datetime.now()),
         Field('fecha_hasta', type='datetime', requires=IS_NOT_EMPTY()), default=lambda:datetime.now())
