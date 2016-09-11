@@ -13,17 +13,17 @@ import datetime
 
 def start():
     # this function creates a form with date types and query the db between the 2 dates
-    # this function is extract from http://brunorocha.org/python/web2py/search-form-with-web2py.html
+    # this function is an extract from http://brunorocha.org/python/web2py/search-form-with-web2py.html
     # default values to keep the form when submitted
     # if you do not want defaults set all below to None
     
-    # to undo at previous working version erase
+    
     
     date_initial_default = \
-        datetime.datetime.strptime(request.vars.date_initial, "%Y-%m-%d") \
+        datetime.datetime.strptime(request.vars.date_initial, "%Y-%m-%d %H:%M:%S") \
             if request.vars.date_inicial else None
     date_final_default = \
-        datetime.datetime.strptime(request.vars.date_final, "%Y-%m-%d") \
+        datetime.datetime.strptime(request.vars.date_final, "%Y-%m-%d %H:%M:%S") \
             if request.vars.date_final else None
     
 
@@ -31,8 +31,8 @@ def start():
     # The search form created with .factory
     form = SQLFORM.factory(
                   
-                  Field("date_initial", "date", default=date_initial_default),
-                  Field("date_final", "date", default=date_final_default),
+                  Field("date_initial", "datetime", default=date_initial_default),
+                  Field("date_final", "datetime", default=date_final_default),
                   formstyle='divs',
                   submit_button="Search",
                   )
