@@ -10,7 +10,36 @@
 
 import datetime
 
-
+def sandbox():
+    #this function is to experiment
+    #rows=db().select(db.po.po_number)
+    #for row in db(db.po.id>0).select():
+     #   rtn = row
+    
+    
+    #query = db.po.id==db.po_detail.po_id
+    #query = db.po_detail.product_id==db.product.id
+    #query &= db.po.po_number ==2424
+    
+    #query = db.po.id==db.po_detail.po_id
+    #query &= db.po_detail.product_id==db.product.id
+    #query &= db.product.id== db.po_detail.product_id
+    #query &= db.po.po_number ==2424
+    
+    rows1=db.executesql('SELECT date, quantity FROM po, po_detail where po_detail.po_id=po.id',as_dict = True)
+    
+    # a query from 2 tables copied from http://stackoverflow.com/questions/11029538/sqlite-query-from-multiple-tables-using-sqlitedatabase
+    
+    #rows1=db.executesql('SELECT quantity, pres  FROM po_detail, product where po_detail.product_id=product.id',as_dict = True)
+    count=len(rows1)
+    #rows1=db(query).select(db.po_detail.product_id, db.product.pres)
+    #count = db(rows1).count()
+    msg = T("%s registers" % count )
+    
+    #rows2=db(query).select(db.po_detail.quantity)
+    #rows3=db(query).select(db.po_detail.quantity*db.po_detail.po_id)
+   # return dict(rows1=rows1,rows2=rows2,rows3=rows3)
+    return dict(rows1=rows1, msg=msg)
 def start():
     # this function creates a form with date types and query the db between the 2 dates
     # this function is an extract from http://brunorocha.org/python/web2py/search-form-with-web2py.html
@@ -61,7 +90,12 @@ def start():
     count = db(query).count()
     results = db(query).select(db.po.po_number,db.po.date,db.po_detail.product_id,db.po_detail.quantity,db.product.pres, db.po.customer_id, orderby='po_number')
     msg = T("%s registers" % count )
-    return dict(form=form, msg=msg, results=results) 
+    #querysql= db.executesql('select * from results', as_dict=True)
+    #querysql= db.executesql('select po_number,date,product_id,quantity,pres, customer_id from po,po_detail,product where () ', as_dict=True)
+    querysqls=db(query).select(db.po_detail.product_id)
+    #db.po.id==db.po_detail.po_id
+    #query &= db.po_detail.po_id==db.product.id
+    return dict(form=form, msg=msg, results=results, querysqls=querysqls) 
 
 def results4():
     import datetime
