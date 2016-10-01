@@ -7,6 +7,68 @@
 # - user is required for authentication and authorization
 # - download is for downloading files uploaded in the db (does streaming)
 # -------------------------------------------------------------------------
+import datetime
+def sandbox():
+    # this function is to perform queries tests on the db
+    query = db.po.id==db.po_detail.po_id
+    query &= db.po_detail.product_id==db.product.id
+    total = db.po_detail.quantity* db.product.pres
+    result=db(query).select(db.po.id, db.po.po_number, db.po.date ,db.po_detail.product_id,db.po_detail.quantity,db.product.pres, total, db.po.customer_id)
+    count = db(query).count()
+    msg = T("%s registers" % count )
+    return dict(result=result, msg=msg)
+
+def start():
+    # this function creates a form with date types and query the db between the 2 dates
+    # this function is an extract from http://brunorocha.org/python/web2py/search-form-with-web2py.html
+    # default values to keep the form when submitted
+    # if you do not want defaults set all below to None
+    
+    
+    
+    date_initial_default = \
+        datetime.datetime.strptime(request.vars.date_initial, "%Y-%m-%d %H:%M:%S") \
+            if request.vars.date_inicial else None
+    date_final_default = \
+        datetime.datetime.strptime(request.vars.date_final, "%Y-%m-%d %H:%M:%S") \
+            if request.vars.date_final else None
+    
+
+
+    # The search form created with .factory
+    form = SQLFORM.factory(
+                  
+                  Field("date_initial", "datetime", default=date_initial_default),
+                  Field("date_final", "datetime", default=date_final_default),
+                  formstyle='divs',
+                  submit_button="Search",
+                  )
+
+    # The base query to fetch all orders of db.po, db.po_details, db.product
+    query = db.po.id==db.po_detail.po_id
+    query &= db.po_detail.product_id==db.product.id
+    
+
+    # testing if the form was accepted              
+    if form.process().accepted:
+        # gathering form submitted values
+        
+        date_initial = form.vars.date_initial
+        date_final = form.vars.date_final
+        
+
+        # more dynamic conditions in to query
+        
+        if date_initial:
+            query &= db.po.date >= date_initial
+        if date_final:
+            query &= db.po.date <= date_final
+                    
+
+    count = db(query).count()
+    results = db(query).select(db.po.po_number,db.po.date,db.po_detail.product_id,db.po_detail.quantity,db.product.pres, db.po.customer_id, orderby='po_number')
+    msg = T("%s registers" % count )
+    return dict(form=form, msg=msg, results=results) 
 
 def order():
     #this function uploads and handles the form from db.po's table also uploads a query which select in reverse order all data in db.po's table
