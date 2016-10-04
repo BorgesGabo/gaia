@@ -8,6 +8,40 @@
 # - download is for downloading files uploaded in the db (does streaming)
 # -------------------------------------------------------------------------
 import datetime
+
+def iterate():
+    #This function is to perform iteration tests on the db
+    query = db.po.id==db.po_detail.po_id
+    query &= db.po_detail.product_id==db.product.id
+    query &= db.po.po_number<2428
+    #total = db.po_detail.quantity* db.product.pres
+    
+    #creates a DAL query and stores as a dictionary
+    #result=db(query).select(db.po.id, db.po.po_number, db.po.date ,db.po_detail.product_id,db.po_detail.quantity,db.product.pres,  db.po.customer_id, total).as_dict()
+    
+    #this is a raw query
+    #result=db.executesql('SELECT po.po_number,po_detail.product_id,product.name,product.pres FROM po,po_detail,product WHERE po.id==po_detail.po_id and po_detail.product_id==product.id and po.po_number<2428;',as_dict=True)
+    
+    #result=db.executesql('SELECT product.name, po_detail.id from po_detail, product, po WHERE po.id==po_detail.po_id and po_detail.product_id==product.id and po.po_number<2428;' ,as_dict=True )
+    
+    #This query removes the duplicates from the pos
+    #result=db.executesql('SELECT min(po_detail.product_id), product.name FROM po_detail, product WHERE product.id==po_detail.product_id GROUP BY po_detail.product_id',as_dict=True)
+    
+    #This query removes the duplicates from the pos
+    #taken from http://stackoverflow.com/questions/25884095/how-can-i-delete-duplicates-in-sqlites
+    result=db.executesql('SELECT min(po_detail.product_id), product.name FROM po_detail, product, po WHERE product.id==po_detail.product_id and po_detail.po_id==po.id and po.po_number<2428 GROUP BY po_detail.product_id',as_dict=True)
+    
+    #calculates the dict's length
+    #result=len(result)
+    
+    #retrieves the third's dictonary element
+    #result=result[0]
+    
+    #count = db(query).count()
+    count= len(result)
+    msg = T("%s registers" % count )
+    return dict(result=result, msg=msg)
+    
 def sandbox():
     # this function is to perform queries tests on the db
     query = db.po.id==db.po_detail.po_id
