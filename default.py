@@ -8,6 +8,76 @@
 # - download is for downloading files uploaded in the db (does streaming)
 # -------------------------------------------------------------------------
 import datetime
+def merger():
+    #This functions consolidates all the filtered po's according to the total quatities per product
+    
+    #1. Performs the filter by dates -> results = type(DAL. query), form= type(DAL, form),  msg=type(DAL, string)
+    #------------------------------------------
+    #1.0 defines the initial and final dates
+    date_initial_default = \
+        datetime.datetime.strptime(request.vars.date_initial, "%Y-%m-%d %H:%M:%S") \
+            if request.vars.date_inicial else None
+    date_final_default = \
+        datetime.datetime.strptime(request.vars.date_final, "%Y-%m-%d %H:%M:%S") \
+            if request.vars.date_final else None
+    
+    #1.1 The search form created with .factory
+    form = SQLFORM.factory(
+                  
+                  Field("date_initial", "datetime", default=date_initial_default),
+                  Field("date_final", "datetime", default=date_final_default),
+                  formstyle='divs',
+                  submit_button="Search",
+                  )
+
+    #1.2 The base query to fetch all orders of db.po, db.po_details, db.product
+    query = db.po.id==db.po_detail.po_id
+    query &= db.po_detail.product_id==db.product.id
+
+    # 1.3 testing if the form was accepted              
+    if form.process().accepted:
+        # gathering form submitted values
+        
+        date_initial = form.vars.date_initial
+        date_final = form.vars.date_final
+        
+        # more dynamic conditions in to query
+        if date_initial:
+            query &= db.po.date >= date_initial
+        if date_final:
+            query &= db.po.date <= date_final
+                    
+    #1.4 counts the total the number of registers 
+    count = db(query).count()
+    
+    #1.5 returns the query results 
+    results = db(query).select(db.po.po_number,db.po.date,db.po_detail.product_id,db.po_detail.quantity,db.product.pres, db.po.customer_id, orderby='po_number')
+    #1.6 prints a message with the number of results
+    msg = T("%s registers" % count )
+    
+    #2. gets all the products contained withing the orders in 1. = A
+    A=db(query).select(db.product.id, groupby='product.name')
+    #2.1 convert A to a list
+    A_rows=A.as_list()
+    #2.2 gets the list's length and print a message with the results
+    count2 = len(A_rows)
+    msg2 = T("%s registers" % count2 )
+    #2.3 retrieves the first product.id from A and queries the db to obtain product.pres*po_detail.quantity
+    Ai=A_rows[0]['id']
+    
+    #2.4 lists all pos in the range
+    pos_query=db(query).select(db.po.id, orderby='po.po_number',groupby='po.po_number' ).as_list()
+    Bj=pos_query[0]['id']
+    query &= db.po_detail.product_id==Ai
+    queryi=db(query).select(db.product.pres *db.po_detail.quantity, groupby='product.name')
+    
+    
+    
+    #3. consolidates all the quantities per po for each product  = B
+    #4. gets all the subtotals per product                       = C
+    #5. gets all the customers contained within the orders in 1. = D
+    
+    return dict(results=results, msg=msg, form=form, A=A, msg2=msg2, Ai=Ai,queryi=queryi, pos_query=pos_query)
 
 def iterate():
     #This function is to perform iteration tests on the db
@@ -24,33 +94,40 @@ def iterate():
     
     #result=db.executesql('SELECT product.name, po_detail.id from po_detail, product, po WHERE po.id==po_detail.po_id and po_detail.product_id==product.id and po.po_number<2428;' ,as_dict=True )
     
-    #This query removes the duplicates from the pos
-    #result=db.executesql('SELECT min(po_detail.product_id), product.name FROM po_detail, product WHERE product.id==po_detail.product_id GROUP BY po_detail.product_id',as_dict=True)
+    
     
     #This query removes the duplicates from the pos
-    #taken from http://stackoverflow.com/questions/25884095/how-can-i-delete-duplicates-in-sqlites
-    result=db.executesql('SELECT min(po_detail.product_id), product.name FROM po_detail, product, po WHERE product.id==po_detail.product_id and po_detail.po_id==po.id and po.po_number<2428 GROUP BY po_detail.product_id',as_dict=True)
+    result=db.executesql('SELECT min(po_detail.product_id), product.name, product.id FROM po_detail, product, po WHERE product.id==po_detail.product_id and po_detail.po_id==po.id and po.po_number<2428 GROUP BY po_detail.product_id',as_dict=True)
     
-    #calculates the dict's length
-    #result=len(result)
+
     
     #retrieves the third's dictonary element
-    #result=result[0]
+    result=result[0]
+    key=result['id']
     
-    #count = db(query).count()
+    #gets the dict' length
     count= len(result)
     msg = T("%s registers" % count )
-    return dict(result=result, msg=msg)
+    return dict(result=result, msg=msg, key=key)
     
 def sandbox():
     # this function is to perform queries tests on the db
+    key=19
     query = db.po.id==db.po_detail.po_id
     query &= db.po_detail.product_id==db.product.id
+    query &= db.po.po_number<2424
+    #query &= db.product.id==key
     total = db.po_detail.quantity* db.product.pres
     result=db(query).select(db.po.id, db.po.po_number, db.po.date ,db.po_detail.product_id,db.po_detail.quantity,db.product.pres, total, db.po.customer_id)
+    #gets the first element
+    #result=result[0]
+    #gets the column desired
+    #result=result['_extra']
+    #gets the value 
+    #result=result['(po_detail.quantity * product.pres)']
     count = db(query).count()
     msg = T("%s registers" % count )
-    return dict(result=result, msg=msg)
+    return dict(result=result, msg=msg, form=form)
 
 def start():
     # this function creates a form with date types and query the db between the 2 dates
