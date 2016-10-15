@@ -55,35 +55,43 @@ def merger():
     #1.6 prints a message with the number of results
     msg = T("%s registers" % count )
     
-    #2. gets all the products contained withing the orders in 1. = A
+    #2. gets all the products contained within the orders in 1. = A
     A=db(query).select(db.product.id, groupby='product.name')
     #2.1 convert A to a list
     A_rows=A.as_list()
-    #2.2 gets the list's length and print a message with the results
+    #2.2 gets the list's length and print it
     count2 = len(A_rows)
     msg2 = T("%s registers" % count2 )
-    #2.3 retrieves the first product.id from A and queries the db to obtain product.pres*po_detail.quantity
+  
+    #3. consolidates all the quantities per po for each product  = B
+    
+    #3.1 retrieves the first product.id from A 
     Ai=A_rows[0]['id']
     
-    #2.4 lists all pos in the range
-    pos_query=db(query).select(db.po.id, orderby='po.po_number',groupby='po.po_number' ).as_list()
-    Bj=pos_query[0]['id']
-    query &= db.po_detail.product_id==Ai
-    queryi=db(query).select(db.product.pres *db.po_detail.quantity, groupby='product.name')
-    
-    
-    
-    #3. consolidates all the quantities per po for each product  = B
+    #3.2 lists all the po.id in the range of dates
+    orders=db(query).select(db.po.id, orderby='po.po_number',groupby='po.po_number' ).as_list()
+
+    #for i, val in enumerate(orders):
+    for a in orders:
+        i=a['id']
+
+        #i=0
+        Bj=orders[i]['id']
+        query_B=query
+        #3.4 get the total quantity for the product.id(Ai)
+        query_B &= db.po_detail.product_id==Ai
+        Bijs=db(query_B).select(db.product.pres *db.po_detail.quantity, groupby='product.name')
+
     #4. gets all the subtotals per product                       = C
     #5. gets all the customers contained within the orders in 1. = D
     
-    return dict(results=results, msg=msg, form=form, A=A, msg2=msg2, Ai=Ai,queryi=queryi, pos_query=pos_query)
+    return dict(results=results, msg=msg, form=form, A=A, msg2=msg2, Ai=Ai,Bijs=Bijs ,orders=orders, i=i)
 
 def iterate():
     #This function is to perform iteration tests on the db
     query = db.po.id==db.po_detail.po_id
     query &= db.po_detail.product_id==db.product.id
-    query &= db.po.po_number<2428
+    query &= db.po.po_number<2424
     #total = db.po_detail.quantity* db.product.pres
     
     #creates a DAL query and stores as a dictionary
@@ -93,22 +101,58 @@ def iterate():
     #result=db.executesql('SELECT po.po_number,po_detail.product_id,product.name,product.pres FROM po,po_detail,product WHERE po.id==po_detail.po_id and po_detail.product_id==product.id and po.po_number<2428;',as_dict=True)
     
     #result=db.executesql('SELECT product.name, po_detail.id from po_detail, product, po WHERE po.id==po_detail.po_id and po_detail.product_id==product.id and po.po_number<2428;' ,as_dict=True )
-    
-    
-    
-    #This query removes the duplicates from the pos
-    result=db.executesql('SELECT min(po_detail.product_id), product.name, product.id FROM po_detail, product, po WHERE product.id==po_detail.product_id and po_detail.po_id==po.id and po.po_number<2428 GROUP BY po_detail.product_id',as_dict=True)
-    
 
+    #This query removes the duplicates from the pos
+    #result=db.executesql('SELECT min(po_detail.product_id), product.name, product.id FROM po_detail, product, po WHERE product.id==po_detail.product_id and po_detail.po_id==po.id and po.po_number<2428 GROUP BY po_detail.product_id',as_dict=True)
+    
+    result=db(query).select(db.po.id, orderby='po.po_number',groupby='po.po_number' ).as_list()
+    result2=db(query).select(db.po.po_number, orderby='po.po_number',groupby='po.po_number' ).as_list()
+    A=db(query).select(db.product.id, groupby='product.name').as_list()
+    #print result
+    #print result2
+    print str('A is:')
+    print A
+    #=result2[0]['po_number']
+    #for a in result:
+     #   i=a['id']
+        #query &= db.product.id==i
+        #result3=db(query).select(db.po.po_number, orderby='po.po_number',groupby='po.po_number' ).as_list()
+    #print i
+        #print result3
+    b=[]
+    for a in A:
+        i=a['id'] #get the id number from dictionary
+        query_A=query #assign the main query to a new one
+        #get the 'i' product of A and retrieve the columns: name and pres
+        query_A &= db.product.id==i 
+        print str('i is:')
+        print i
+        result4 = db(query_A).select(db.product.name, db.product.pres, db.po_detail.quantity, orderby='po.po_number',groupby='po.po_number').as_list()
+        print str('result4 is:')
+        print result4
+        
+        print str('b is:')
+        print b
+        result5=int(result4[0]['product']['pres'])
+        print str('result5 is:')
+        print result5
+        b.append(result5)
+        print str('b afert append is:')
+        print b
+       
+        
+    #c:\Python27\python.exe c:\web2py\web2py.py -S EssenciaAPI24/default/iterate -M
+     
     
     #retrieves the third's dictonary element
-    result=result[0]
-    key=result['id']
+    #result=result[0]
+    #key=result['id']
     
     #gets the dict' length
     count= len(result)
     msg = T("%s registers" % count )
-    return dict(result=result, msg=msg, key=key)
+    
+    return dict(result=result, msg=msg, result2=result2, result4=result4, b=b, result5=result5, d=d)
     
 def sandbox():
     # this function is to perform queries tests on the db
