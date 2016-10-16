@@ -10,14 +10,14 @@ def B():
   print str('A is:')
   print A
 
-#filtra los del primer producto de A -> DAL> query_a
-query_ai= query
-query_ai &= a_list[0]['id']
+  #filtra los del primer producto de A -> DAL> query_a
+  query_ai= query
+  query_ai &= a_list[0]['id']
 
-#obtiene todos los pedidos Ai-> lista> pedidos_ai_list, cuenta No pedidos -> int> n, crea B ->lista>b_list
-pedidos_ai_list=db(query_ai).select(db.po.id orderby=db.po.po_number).as_list()
-n=len(pedidos_ai_list)
-b_list=[]
+  #obtiene todos los pedidos Ai-> lista> pedidos_ai_list, cuenta No pedidos -> int> n, crea B ->lista>b_list
+  pedidos_ai_list=db(query_ai).select(db.po.id orderby=db.po.po_number).as_list()
+  n=len(pedidos_ai_list)
+  b_list=[]
 #for e/a cada pedido...
 for j in range(0,n):
   if len(pedidos_ai_list[j])== 0: #si el pedido j es un elemento vacio
