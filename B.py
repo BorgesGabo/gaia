@@ -1,10 +1,18 @@
 def B():
 
-query...
+  #las condiciones para el query ->DAL> query
+  query = db.po.id==db.po_detail.po_id
+  query &= db.po_detail.product_id==db.product.id
+  query &= db.po.po_number<2430
+
+  #obtiene todos los productos contenidos en todos los pedidos sin repetir ->list> a_list
+  a_list=db(query).select(db.product.id, groupby='product.name').as_list()
+  print str('A is:')
+  print A
 
 #filtra los del primer producto de A -> DAL> query_a
 query_ai= query
-query_ai &= A[0]['id']
+query_ai &= a_list[0]['id']
 
 #obtiene todos los pedidos Ai-> lista> pedidos_ai_list, cuenta No pedidos -> int> n, crea B ->lista>b_list
 pedidos_ai_list=db(query_ai).select(db.po.id orderby=db.po.po_number).as_list()
@@ -23,4 +31,4 @@ for j in range(0,n):
     b_list.append(qty_bij*pres_bij) #multiplica los dos valores y agrega a la lista
 
 
-return dic()
+return dict()
