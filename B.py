@@ -1,3 +1,4 @@
+
 def B():
 
     #las condiciones para el query ->DAL> query
@@ -27,9 +28,11 @@ def B():
     print str('pedidos_ai_list is:')
     print pedidos_ai_list
     b_list=[]
-
+    c_list=[]
+    c=0
     #for e/a cada pedido del rango...
     for j in range(0,n):
+        
         print str('j is:')
         print j
         orders_in_range_j=orders_in_range[j]['id'] #obtenga el id del j-esimo pedido del rango
@@ -37,15 +40,15 @@ def B():
         print orders_in_range_j
         
         
-        for k in range(len(pedidos_ai_list)):
+        for k in range(len(pedidos_ai_list)): # for cada uno de los elementos en la lista de pedidos que tiene el producto ai
             print str('k is:')
             print k
             
             print str('pedidos_ai_list[k] is:')
             print pedidos_ai_list[k]
-            if orders_in_range_j==pedidos_ai_list[k]['id']: 
+            if orders_in_range_j==pedidos_ai_list[k]['id']: # si el id del j-esimo pedido del coincide con id del pedido que tiene el ai... 
                 query_b = query_ai  #el nuevo constraint ... 
-                query_b &= db.po.id==pedidos_ai_list[k]['id'] # toma el pedido con id igual al j-esimo pedido de la lista devuelve el id
+                query_b &= db.po.id==pedidos_ai_list[k]['id'] # toma el pedido con cuyo id coincide con el del pedido que tiene producto ai
                 print str('query_b is:')
                 print query_b
         #if orders_in_range_j in pedidos_ai_list:
@@ -66,6 +69,14 @@ def B():
                 b_list.append(0)
                 print str('b_list is:')
                 print b_list
-
+            print str('b_list j is:')
+            print b_list[j]
+        c += b_list[j]
+        
+        print str('c is:')
+        print c
+    c_list.append(c)    
+    print str('c_list is:')
+    print c_list
     
     return 
