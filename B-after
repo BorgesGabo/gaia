@@ -46,6 +46,9 @@ def B():
             print str('+')*30
             print str('j is:')
             print j
+            print str('+')*30
+            print str('n is:')
+            print n
             orders_in_range_j=orders_in_range[j]['id'] #obtenga el id del j-esimo pedido del rango
             print str('orders_in_range_j: is the j-esim order id:')
             print orders_in_range_j
@@ -81,18 +84,19 @@ def B():
                     print str('b_list is:')
                     print b_list
             
-            print str('j element of B_list is:')
-            print b_list[j]
-            c += b_list[j]
-
-            print str('c: the sum is:')
-            print c
-        c_list.append(c)  
-        if j==n:
-                c=0
-        print str('c_list is:')
-        print c_list
-    
+       
+                if j==n-1:
+                    print str('esta es  cuando j loop terminba b_list is:')
+                    print b_list
+                    sumandos=b_list
+                    c=sum(sumandos)
+                    print str('c is:')
+                    print c
+                    c_list.append(c)
+                    print str('c_list is:')
+                    print c_list
+                    c=0
+                    del c_list[:]
     print str('a_list is:')
     print len(a_list)
     return 
