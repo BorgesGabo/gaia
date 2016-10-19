@@ -1,23 +1,33 @@
+
 def B():
 
     #las condiciones para el query ->DAL> query
     query = db.po.id==db.po_detail.po_id
     query &= db.po_detail.product_id==db.product.id
-    query &= db.po.po_number<2430
+    query &= db.po.po_number<2428
     
     #obtiene el numero total de pedidos en el rango
     orders_in_range=db(query).select(db.po.id, groupby='po.po_number').as_list()
     n=len(orders_in_range)
-    print str('orders in range are:')
+    print str('orders id in range are:')
     print orders_in_range
 
     #obtiene todos los productos contenidos en todos los pedidos sin repetir ->list> a_list
     a_list=db(query).select(db.product.id, groupby='product.name').as_list()
-    print str('a_list is:')
+    print str('*')*30
+    print str('a_list: all products id in query no repeated are:')
     print a_list
+   
+    b_list=[]
+    c_list=[]
+    c=0
     
     #obtiene el primer elemento de a_list -> DAL> query_ai
-    for i in range(len(a_list)):
+    for i in range(2):
+        print str('*')*30
+        print str('i-element of a_list is:')
+        print i
+        
         query_ai= query
         query_ai &= db.product.id==a_list[i]['id']
         print str('query_ai is:')
@@ -25,18 +35,19 @@ def B():
 
         #obtiene todos los pedidos Ai-> lista> pedidos_ai_list, cuenta No pedidos no repetidos -> int> n, crea B ->lista>b_list
         pedidos_ai_list=db(query_ai).select(db.po.id, orderby='po.po_number', groupby='po.po_number').as_list()
-        print str('pedidos_ai_list is:')
+        print str('*')*30
+        print str('pedidos_ai_list: all the orders (ids) in range containing id of Ai element are:')
         print pedidos_ai_list
-        b_list=[]
-        c_list=[]
-        c=0
+        #b_list=[]
+        #c_list=[]
+        #c=0
         #for e/a cada pedido del rango...
         for j in range(0,n):
-
+            print str('+')*30
             print str('j is:')
             print j
             orders_in_range_j=orders_in_range[j]['id'] #obtenga el id del j-esimo pedido del rango
-            print str('orders_in_range_j is:')
+            print str('orders_in_range_j: is the j-esim order id:')
             print orders_in_range_j
 
 
@@ -69,14 +80,19 @@ def B():
                     b_list.append(0)
                     print str('b_list is:')
                     print b_list
-                print str('b_list j is:')
-                print b_list[j]
+            
+            print str('j element of B_list is:')
+            print b_list[j]
             c += b_list[j]
 
-            print str('c is:')
+            print str('c: the sum is:')
             print c
-        c_list.append(c)    
+        c_list.append(c)  
+        if j==n:
+                c=0
         print str('c_list is:')
         print c_list
     
+    print str('a_list is:')
+    print len(a_list)
     return 
