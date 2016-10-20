@@ -94,11 +94,18 @@ def B():
     query &= db.po_detail.product_id==db.product.id
     query &= db.po.po_number<2428
     
+    #query_name = query
+    #query_name &= db.po.customer_id==db.customer.id
+    
     #obtiene el numero total de pedidos en el rango
     orders_in_range=db(query).select(db.po.id, groupby='po.po_number').as_list()
     n=len(orders_in_range)
     print str('orders id in range are:')
     print orders_in_range
+    
+    #d_list=db(query_name).select(db.customer.full_name, groupby='po.po_number').as_list()
+    #print str('d_list is:')
+    #print d_list
 
     #obtiene todos los productos contenidos en todos los pedidos sin repetir ->list> a_list
     a_list=db(query).select(db.product.id, groupby='product.name').as_list()
@@ -108,8 +115,9 @@ def B():
    
     b_list=[]
     c_list=[]
+    d_list=[]
     addend_of_c_list=[]
-    #c=0
+    
     
     #obtiene el primer elemento de a_list -> DAL> query_ai
     for i in range(len(a_list)):
@@ -150,6 +158,11 @@ def B():
                 if orders_in_range_j==pedidos_ai_list[k]['id']: # si el id del j-esimo pedido del coincide con id del pedido que tiene el ai... 
                     query_b = query_ai  #el nuevo constraint ... 
                     query_b &= db.po.id==pedidos_ai_list[k]['id'] # toma el pedido con cuyo id coincide con el del pedido que tiene producto ai
+                    # get the D
+                    #d_list.append(db(query_b).select(db.customer.full_name).as_list())
+                    #print str('d_list is')
+                    #print d_list
+                    
                     print str('query_b is:')
                     print query_b
             #if orders_in_range_j in pedidos_ai_list:
@@ -165,7 +178,7 @@ def B():
                     print str('b_list is:')
                     print b_list
 
-                else:         # en caso contrario
+                else:         # si el pedido j-esimo no tiene productos en A:
                     print str('b_list is:')
                     print b_list
                     b_list.append(0)
@@ -174,18 +187,6 @@ def B():
                     print b_list
             
         
-                #if j==n-1:   # si termina el for entonces...
-                    #print str('addends of c are:')
-                    #print addend_of_c_list
-                    #addend_of_c_list
-                    #c_list.append(sum(addend_of_c_list))
-                    #print str('c_list is:')
-                    #print c_list
-                    #del addend_of_list[:]
-                    #print str('c_list is:')
-                    #print c_list
-                    #c=0
-                    #del c_list[:]
             if j==n-1: #en el ultimo loop de j
                 print str('adddend of c are:')
                 print addend_of_c_list
@@ -199,6 +200,14 @@ def B():
     print str('c_list is:')
     print c_list
     print str('the c size is equal to the size of a_list?')+str('  ')+str(len(c_list)==len(a_list))
+    
+    
+    query_name = query
+    query_name &= db.po.customer_id==db.customer.id
+    d_list=db(query_name).select(db.customer.full_name, groupby='po.po_number').as_list()
+    print str('d_list is:')
+    print d_list
+    
     return 
 
 
