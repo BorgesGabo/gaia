@@ -8,6 +8,30 @@
 # - download is for downloading files uploaded in the db (does streaming)
 # -------------------------------------------------------------------------
 import datetime
+from prettytable import PrettyTable
+from prettytable import  ALL
+
+def w():
+    return
+
+def table():
+    
+    pt = PrettyTable(["City name", "Area", "Population", "Annual Rainfall"])
+    pt.align["City name"] = "l" # Left align city names
+    pt.padding_width = 1 # One space between column edges and contents (default)
+    pt.add_row(["Adelaide",1295, 1158259, 600.5])
+    pt.add_row(["Brisbane",5905, 1857594, 1146.4])
+    pt.add_row(["Darwin", 112, 120900, 1714.7])
+    pt.add_row(["Hobart", 1357, 205556, 619.5])
+    pt.add_row(["Sydney", 2058, 4336374, 1214.8])
+    pt.add_row(["Melbourne", 1566, 3806092, 646.9])
+    pt.add_row(["Perth", 5386, 1554769, 869.4])
+    lines = pt.get_string()
+    with open ('la_tabla.txt','w') as w:
+        w.write(str(pt))
+    print pt
+    return
+
 def merger():
     #This functions consolidates all the filtered po's according to the total quatities per product
     
@@ -204,10 +228,46 @@ def B():
     
     query_name = query
     query_name &= db.po.customer_id==db.customer.id
-    d_list=db(query_name).select(db.customer.full_name, groupby='po.po_number').as_list()
+    d_list=db(query_name).select(db.po.po_number, groupby='po.po_number').as_list()
     print str('d_list is:')
     print d_list
+    print str('b_list:')
+    print b_list
+    print str('a_list is:')
+    print a_list
     
+    #****************** IMPRIME TABLA RESUMEN ****
+    
+    field_names_lst=[str(x['po_number']) for x in d_list ] #crea una lista con todos los numeros del pedido dentro del rango
+    field_names_lst.insert(0, "Producto")                   # agrega al inicio de la lista el titulo producto 
+    field_names_lst.insert(len(field_names_lst),"Total")    # Adiciona al final de la lista el titulo total
+    summary_table=PrettyTable(field_names_lst)              # crea la tabla resumen con los titulos de cada columna
+    #cell_data_lst=[str("pum") for y in b_list if y!=y*n]
+    for y in range (len(b_list)):
+        print str('quantity is')
+        print b_list[y]
+    print n
+    print len(b_list)
+    print len(a_list)
+    
+    def summary (query, b_list, c_list, d_list):
+        a_list_as_names=db(query).select(db.product.name, groupby='product.name').as_list()
+        x=PrettyTable(["Productos"])
+        print str('a_list_as_names are:')
+        print a_list_as_names
+        for a in a_list_as_names:
+            b=a['name']
+            x.add_row([b])
+            x.align["Productos"]="l"
+            #x.hrules = prettytable.ALL
+            
+        print str('summary table is:')
+        print x
+        return
+    summary(query, b_list, c_list, d_list)
+    
+    print str('the summary table is:')
+    #print cell_data_lst
     return 
 
 
