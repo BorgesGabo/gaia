@@ -237,16 +237,28 @@ def B():
     print a_list
     
     #****************** IMPRIME TABLA RESUMEN ****
-    
+    a_names_lst=db(query).select(db.product.name, groupby='product.name').as_list()  #obtiene lista de nombres productos no repetidos en rango
     field_names_lst=[str(x['po_number']) for x in d_list ] #crea una lista con todos los numeros del pedido dentro del rango
     field_names_lst.insert(0, "Producto")                   # agrega al inicio de la lista el titulo producto 
     field_names_lst.insert(len(field_names_lst),"Total")    # Adiciona al final de la lista el titulo total
     summary_table=PrettyTable(field_names_lst)              # crea la tabla resumen con los titulos de cada columna
-    #cell_data_lst=[str("pum") for y in b_list if y!=y*n]
-    for y in range (len(b_list)):
-        print str('quantity is')
-        print b_list[y]
-    print n
+    for y in range (0,len(a_list)):
+        #print str('quantity is')
+        begining_slice=y*n                                  #definicion del inicio del intervalo de corte de la lista
+        end_slice=begining_slice+n                          #definicion del fin del intervalo de corte de la lista
+        row_summary_lst=b_list[begining_slice:end_slice]    #Toma los totales entre el incio y fin del intervalo sin tocar el fin
+        row_summary_lst.insert(0,a_names_lst[y]['name'])    #agrega el nombre al inicio de la lista
+        row_summary_lst.insert(len(row_summary_lst),c_list[y])  #agrega el total al final de la lista
+        summary_table.add_row(row_summary_lst)              # agrega filas a la tabla
+        summary_table.align['Producto']='l'
+        
+        print row_summary_lst
+        #print begining_slice
+        #print end_slice
+        #print b_list[y]
+        #print str('y es:')
+        #print y
+    '''print n
     print len(b_list)
     print len(a_list)
     
@@ -264,10 +276,10 @@ def B():
         print str('summary table is:')
         print x
         return
-    summary(query, b_list, c_list, d_list)
+    summary(query, b_list, c_list, d_list)'''
     
     print str('the summary table is:')
-    #print cell_data_lst
+    print summary_table
     return 
 
 
