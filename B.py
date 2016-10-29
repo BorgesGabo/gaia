@@ -1,4 +1,3 @@
-
 def B():
 
     #las condiciones para el query ->DAL> query
@@ -11,20 +10,25 @@ def B():
     n=len(orders_in_range)
     print str('orders id in range are:')
     print orders_in_range
+    
+    #d_list=db(query_name).select(db.customer.full_name, groupby='po.po_number').as_list()
+    #print str('d_list is:')
+    #print d_list
 
     #obtiene todos los productos contenidos en todos los pedidos sin repetir ->list> a_list
     a_list=db(query).select(db.product.id, groupby='product.name').as_list()
-    print str('*')*30
+    '''print str('*')*30
     print str('a_list: all products id in query no repeated are:')
-    print a_list
+    print a_list'''
    
     b_list=[]
     c_list=[]
+    d_list=[]
     addend_of_c_list=[]
-    #c=0
+    
     
     #obtiene el primer elemento de a_list -> DAL> query_ai
-    for i in range(len(a_list)):
+    for i in range(5):
         print str('*')*30
         print str('i-element of a_list is:')
         print i
@@ -77,7 +81,7 @@ def B():
                     print str('b_list is:')
                     print b_list
 
-                else:         # en caso contrario
+                else:         # si el pedido j-esimo no tiene productos en A:
                     print str('b_list is:')
                     print b_list
                     b_list.append(0)
@@ -86,29 +90,70 @@ def B():
                     print b_list
             
         
-                #if j==n-1:   # si termina el for entonces...
-                    #print str('addends of c are:')
-                    #print addend_of_c_list
-                    #addend_of_c_list
-                    #c_list.append(sum(addend_of_c_list))
-                    #print str('c_list is:')
-                    #print c_list
-                    #del addend_of_list[:]
-                    #print str('c_list is:')
-                    #print c_list
-                    #c=0
-                    #del c_list[:]
             if j==n-1: #en el ultimo loop de j
                 print str('adddend of c are:')
                 print addend_of_c_list
                 c_list.append(sum(addend_of_c_list)) #obtiene la suma de las cantidades de los pedidos
                 #reinicia todo a ceros
                 del addend_of_c_list[:]
-        print str('c erased is:')
+        #print str('c erased is:')
         print addend_of_c_list
     print str('total of products contained in the orders are:')
     print len(a_list)
     print str('c_list is:')
     print c_list
     print str('the c size is equal to the size of a_list?')+str('  ')+str(len(c_list)==len(a_list))
+    
+    
+    query_name = query
+    query_name &= db.po.customer_id==db.customer.id
+    d_list=db(query_name).select(db.po.po_number, groupby='po.po_number').as_list()
+    print str('d_list is:')
+    print d_list
+    print str('b_list:')
+    print b_list
+    '''print str('a_list is:')
+    print a_list'''
+    '''
+    #************************************* IMPRIME TABLA RESUMEN **************************************
+    a_names_lst=db(query).select(db.product.name, groupby='product.name').as_list()  #obtiene lista de nombres productos no repetidos en rango
+    field_names_lst=[str(x['po_number']) for x in d_list ] #crea una lista con todos los numeros del pedido dentro del rango
+    field_names_lst.insert(0, "Producto")                   # agrega al inicio de la lista el titulo producto 
+    field_names_lst.insert(len(field_names_lst),"Total")    # Adiciona al final de la lista el titulo total
+    summary_table=PrettyTable(field_names_lst)              # crea la tabla resumen con los titulos de cada columna
+    total_lst=[]
+    for y in range (0,len(a_list)):
+        #print str('quantity is')
+        begining_slice=y*n                                  #definicion del inicio del intervalo de corte de la lista
+        end_slice=begining_slice+n                          #definicion del fin del intervalo de corte de la lista
+        row_summary_lst=b_list[begining_slice:end_slice]    #Toma los totales entre el incio y fin del intervalo sin tocar el fin
+        #total=sum(row_summary_lst)                      #suma las cantidades de todos los pedidos del rango
+        row_summary_lst.insert(0,a_names_lst[y]['name'])    #agrega el nombre al inicio de la lista
+        row_summary_lst.insert(len(row_summary_lst),c_list[y])  #agrega el total al final de la lista
+        #row_summary_lst.insert(len(row_summary_lst),total)  # agrega el total al final de la lista
+        summary_table.add_row(row_summary_lst)              # agrega filas a la tabla
+        summary_table.align['Producto']='l'                 # alinea la a la izquierda la primera columna
+        
+        #print row_summary_lst  '''
+        
+    '''
+    
+    def summary (query, b_list, c_list, d_list):
+        a_list_as_names=db(query).select(db.product.name, groupby='product.name').as_list()
+        x=PrettyTable(["Productos"])
+        print str('a_list_as_names are:')
+        print a_list_as_names
+        for a in a_list_as_names:
+            b=a['name']
+            x.add_row([b])
+            x.align["Productos"]="l"
+            #x.hrules = prettytable.ALL
+            
+        print str('summary table is:')
+        print x
+        return
+    summary(query, b_list, c_list, d_list)'''
+    
+    #print str('the summary table is:')
+    #print summary_table
     return 
