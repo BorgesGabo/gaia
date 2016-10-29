@@ -1,7 +1,3 @@
-from prettytable import PrettyTable
-from prettytable import  ALL
-
-
 def ABCD():
 
     b_lst=[]                                                                       #crea lista de b con los subtotales
@@ -77,5 +73,7 @@ def ABCD():
         summary_table.align['Total']='r'                    # alinea a la derecha la ultima columna
     print summary_table                                     # imprime la tabla resumen
     with open ('consolidado.txt','w') as w:                 # escribe la tabla en un archivo txt
+        w.write(str('ESTE ES EL CONSOLIDADO DE LOS SIGUIENTES PEDIDOS:'))
+        w.write('\n')
         w.write(str(summary_table))
     return
