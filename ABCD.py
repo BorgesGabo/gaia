@@ -1,4 +1,3 @@
-
 def ABCD():
 
     b_lst=[]                                                                       #crea lista de b con los subtotales
@@ -9,7 +8,7 @@ def ABCD():
     #define el query base -> DAL > query
     query = db.po.id==db.po_detail.po_id                   
     query &= db.po_detail.product_id==db.product.id
-    query &= db.po.po_number<2428
+    query &= db.po.po_number<2448
 
     orders_query_lst=db(query).select(db.po.id, db.po.po_number, groupby='po.po_number').as_list() #obtiene id de los pedidos del query
     n=len(orders_query_lst)                                                                      #obtiene el numero de pedidos de query
@@ -48,7 +47,7 @@ def ABCD():
     #print pres_lst
     z_lst=[]
     z_lst=[qty_lst*pres_lst for qty_lst,pres_lst in zip(qty_lst,pres_lst)] #calcula pres*qty para cada uno de los elementos de la lista
-    print z_lst
+    #print z_lst
             #print (str('j is:'), j)                                     #impresion de prueba
             #print (str('bj_lst is:'), bj_lst)                           #impresion de prueba
             #print (str('b_lst is:'), b_lst)                             #impresion de prueba
@@ -72,6 +71,8 @@ def ABCD():
         row_summary_lst.insert(len(row_summary_lst),total)  # agrega el total al final de la lista
         summary_table.add_row(row_summary_lst)              # agrega filas a la tabla
         summary_table.align['Producto']='l'                 # alinea la a la izquierda la primera columna
+        summary_table.align['Total']='r'                    # alinea a la derecha la ultima columna
     print summary_table
-
+    with open ('consolidado.txt','w') as w:
+        w.write(str(summary_table))
     return
