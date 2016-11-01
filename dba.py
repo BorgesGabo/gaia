@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*-
+import os
 db = DAL('sqlite://storage.sqlite')
+db.define_table(
+    'wp',
+    Field('number'), 
+    Field ('json_file', 'upload', uploadfolder=os.path.join(request.folder,'uploads'), autodelete=True))
 
 db.define_table(
     'customer',
@@ -79,7 +84,3 @@ db.product.status.requires =[ IS_IN_SET(['disponible','descontinuado','agotado']
 #--------------------------------
 # verifies that the quantity is a number not empty
 db.po_detail.quantity.requires=[IS_NOT_EMPTY(error_message='add a quantity'),IS_MATCH('^[0-9]*$', error_message='Introduce a valid quantity a number')]
-
-
-
-
