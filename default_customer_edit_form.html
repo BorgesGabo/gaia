@@ -1,0 +1,8 @@
+<!-- Activate lateral bar ======================================= -->
+{{left_sidebar_enabled=True,('message' in globals())}}
+{{extend 'layout2.html'}}
+<h1 align='center'>Editar datos del cliente</h1>
+<h4 align='center'>Selecciona de la lista el cliente a editar ó utiliza la barra de busqueda para encontrarlo</h4>
+
+<!-- Insert the form ======================================= -->
+{{=BEAUTIFY(response._vars)}}
