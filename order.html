@@ -1,11 +1,15 @@
-{{extend 'layout.html'}}
-<h1 align='center'>Purchase order detail form</h1>
-<h2>Please insert the data below:</h2>
+<!-- Activate lateral bar ======================================= -->
+{{left_sidebar_enabled=True,('message' in globals())}}
+{{extend 'layout2.html'}}
+<h1 align='center'>Nuevo pedido</h1>
+<h4 align='center'>Ingresa los datos de cada pedido, al terminar guarda y haz clic en siguiente para ingresar los productos</h4>
 
-<div >
+<!-- Insert the form ======================================= -->
+<div>
 {{=form}}
 </div>
 
+<!-- Insert the query ======================================= -->
 <div align='center'>
 {{=ordenes}}
     
