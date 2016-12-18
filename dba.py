@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 import os
 db = DAL('sqlite://storage.sqlite')
-db.define_table(
-    'wp',
-    Field('number'), 
-    Field ('json_file', 'upload', uploadfolder=os.path.join(request.folder,'uploads'), autodelete=True))
+
+db.define_table('wp',
+    Field('name', requires=IS_NOT_EMPTY()),
+    Field('json_file', 'upload'))
 
 db.define_table(
     'customer',
-    Field('doc'),
+    Field('doc',label='No. Documento'),
     Field('full_name'),
     Field('user_mail'),
     Field('phone'),
