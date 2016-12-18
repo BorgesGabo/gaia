@@ -12,23 +12,111 @@ import datetime
 from prettytable import PrettyTable
 from prettytable import  ALL
 
+def process_po():
+    # this function creates a form with date types and query the db between the 2 dates
+    # this function is an extract from http://brunorocha.org/python/web2py/search-form-with-web2py.html
+    # default values to keep the form when submitted
+    # if you do not want defaults set all below to None
+    date_initial_default = \
+        datetime.datetime.strptime(request.vars.date_initial, "%Y-%m-%d %H:%M:%S") \
+            if request.vars.date_inicial else None
+    date_final_default = \
+        datetime.datetime.strptime(request.vars.date_final, "%Y-%m-%d %H:%M:%S") \
+            if request.vars.date_final else None
+    # The search form created with .factory
+    form = SQLFORM.factory(
+                  Field("date_initial", "datetime", default=date_initial_default),
+                  Field("date_final", "datetime", default=date_final_default),
+                  formstyle='divs',
+                  submit_button="Search",
+                  )
+    # The base query to fetch all orders of db.po, db.po_details, db.product
+    query = db.po.id==db.po_detail.po_id
+    query &= db.po_detail.product_id==db.product.id
+    # testing if the form was accepted              
+    if form.process().accepted:
+        # gathering form submitted values
+        date_initial = form.vars.date_initial
+        date_final = form.vars.date_final
+        # more dynamic conditions in to query
+        if date_initial:
+            query &= db.po.date >= date_initial
+        if date_final:
+            query &= db.po.date <= date_final
+    count = db(query).count()
+    results = db(query).select(db.po.po_number,db.po.date,db.po_detail.product_id,db.po_detail.quantity,db.product.pres, db.po.customer_id, orderby='po_number')
+    msg = T("%s registros encontrados" % count )
+    ABCD(query)
+    return dict(form=form, msg=msg, results=results)
+
+def i_file(): # esta funcion es para generar el path y parse un archivo json sin el formulario
+    import sys
+    import json
+    import re
+    file_name='orders1.json'
+    uploadfolder='C:\Users\Sandra\Documents\Herbert\Projecto web2py'
+    #form=SQLFORM.factory(Field('json_file', 'upload', uploadfolder=os.path.join(request.folder, 'uploads'),label='esta el laberl'))
+    path=('%s\%s' % (uploadfolder, file_name))
+    print path
+    print str('path is a type of:')
+    print type(path)
+    '''if form.process().accepted:
+        #file_name=form.vars.json_file
+        #path=('%s\%s' % (os.path.join(request.folder,'uploads'), file_name))
+        path=('%s\%s' % (uploadfolder, file_name))
+        #redirect(URL('printme', args=(path)))
+        redirect(URL('form1'))
+        printme(str(path))
+    
+    return dict(form=form )'''
+    with open(path) as json_file:
+	datos=json.load(json_file)
+	print (type(datos))
+	print (len(datos))
+    print datos[1]
+    return
+
+def printme(str):
+    #str="hello there"
+    print str
+    return dict(str=str)
+    
+
+def gameTime():
+    print path
+    return 'OK'
+
+def display_form():
+   
+   record = db.wp(request.args(0))
+   form = SQLFORM(db.wp, record, deletable=True,
+                  upload=URL('download'))
+   if form.process().accepted:
+       response.flash = 'form accepted'
+   elif form.errors:
+       response.flash = 'form has errors'
+   return dict(form=form)
+
+def download():
+    return response.download(request, db)
+
 def up_json():
-    form=SQLFORM.factory(db.wp, table_name='wp')
+    form=SQLFORM(db.wp)
     return dict(form=form)
 
 
 
-def ABCD():
-
+def ABCD(query):
+    # Esta corre metiendo el siguiente codigo c:\Python27\python.exe c:\web2py\web2py.py -S EssenciaAPI24/default/ABCD
     b_lst=[]                                                                       #crea lista de b con los subtotales
     c_lst=[]                                                                       #crea lista de c contiene los totales por producto
     qty_lst=[]                                                                     #crea lista de cantidades
     pres_lst=[]                                                                     #crea lista de presentaciones
     #**************************************QUERY BASE **************************************
     #define el query base -> DAL > query
-    query = db.po.id==db.po_detail.po_id
+    '''query = db.po.id==db.po_detail.po_id
     query &= db.po_detail.product_id==db.product.id
-    query &= db.po.po_number<2432
+    query &= db.po.po_number<2432'''                                              #quitar comillas si quiere probar desde la linea de comandos
 
     orders_query_lst=db(query).select(db.po.id, db.po.po_number, groupby='po.po_number').as_list() #obtiene id de los pedidos del query
     n=len(orders_query_lst)                                                                      #obtiene el numero de pedidos de query
@@ -362,7 +450,7 @@ def start():
 def order():
     #this function uploads and handles the form from db.po's table also uploads a query which select in reverse order all data in db.po's table
     ordenes=db(db.po.id>0).select(orderby=~db.po.id)
-    form=SQLFORM(db.po, buttons =[TAG.button('save', _type="submit"),TAG.button('update', _type="button", _onClick ="parent.location='%s'" %URL(order)), TAG.button('next',_type="button", _onClick=" parent.location='%s'" %URL(orderd))])
+    form=SQLFORM(db.po, buttons =[TAG.button('guardar', _type="submit"),TAG.button('actualizar listado', _type="button", _onClick ="parent.location='%s'" %URL(order)), TAG.button('siguiente',_type="button", _onClick=" parent.location='%s'" %URL(orderd))])
     if form.process().accepted:
         response.flash='order accepted'
     elif form.errors:
@@ -374,7 +462,7 @@ def order():
 def orderd():
     #this function uploads and handles the form from db.po_detail's table also uploads a query which select in reverse order all data in db.po_detail table
     ordenes=db(db.po_detail.id>0).select(orderby=~db.po_detail.po_id)
-    form=SQLFORM(db.po_detail, buttons = [TAG.button('save',_type="submit"),TAG.button('update',_type="button",_onClick = "parent.location='%s' " % URL(orderd))])
+    form=SQLFORM(db.po_detail, buttons = [TAG.button('guardar',_type="submit"),TAG.button('actualizar listado',_type="button",_onClick = "parent.location='%s' " % URL(orderd))])
     if form.process().accepted:
        response.flash = 'form accepted'
     elif form.errors:
@@ -385,7 +473,7 @@ def orderd():
 
 def form1():
     #This function creates a form from db.customer's table
-   form = SQLFORM(db.customer,buttons = [TAG.button('save',_type="submit"),TAG.button('next',_type="button",_onClick = "parent.location='%s' " % URL(form2))])
+   form = SQLFORM(db.customer,buttons = [TAG.button('guardar',_type="submit"),TAG.button('siguiente',_type="button",_onClick = "parent.location='%s' " % URL(order))])
 
    if form.process().accepted:
        response.flash = 'form accepted'
@@ -419,7 +507,7 @@ def form3():
 
 def form4():
     #This function creates a form from db.product's table
-   form = SQLFORM(db.product)
+   form = SQLFORM(db.product, buttons=[TAG.button('guardar', _type="submit")])
    if form.process().accepted:
        response.flash = 'form accepted'
    elif form.errors:
@@ -431,6 +519,16 @@ def form4():
 def form5():
     #This function creates a grid form from db.product's table
     grid = SQLFORM.grid(db.po_detail, user_signature=False)
+    return locals()
+
+def customer_edit_form():
+    #This function creates a grid form from db.product's table
+    grid = SQLFORM.grid(db.customer, user_signature=False)
+    return locals()
+
+def product_edit_form():
+    #This function creates a grid form from db.product's table
+    grid = SQLFORM.grid(db.product, user_signature=False)
     return locals()
 
 def index():
