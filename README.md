@@ -4,4 +4,4 @@ This contains the API files
 1. Module
 2. Controller
 3. Views
-To install please read Installing.txt
+4. To install please read Installing.txt
